@@ -11,15 +11,15 @@ import os
 
 FLAGS = easydict.EasyDict({"img_size": 512,
 
-                           "train_txt_path": "/yuhwan/yuhwan/Dataset/Segmentation/Crop_weed/datasets_IJRR2017/train.txt",
+                           "train_txt_path": "/yuwhan/yuwhan/Dataset/Segmentation/BoniRob/train.txt",
 
-                           "val_txt_path": "/yuhwan/yuhwan/Dataset/Segmentation/Crop_weed/datasets_IJRR2017/val.txt",
+                           "val_txt_path": "/yuwhan/yuwhan/Dataset/Segmentation/BoniRob/val.txt",
 
-                           "test_txt_path": "/yuhwan/yuhwan/Dataset/Segmentation/Crop_weed/datasets_IJRR2017/test.txt",
+                           "test_txt_path": "/yuwhan/yuwhan/Dataset/Segmentation/BoniRob/test.txt",
                            
-                           "label_path": "/yuhwan/yuhwan/Dataset/Segmentation/Crop_weed/datasets_IJRR2017/raw_aug_gray_mask/",
+                           "label_path": "/yuwhan/yuwhan/Dataset/Segmentation/BoniRob/raw_aug_gray_mask/",
                            
-                           "image_path": "/yuhwan/yuhwan/Dataset/Segmentation/Crop_weed/datasets_IJRR2017/raw_aug_rgb_img/",
+                           "image_path": "/yuwhan/yuwhan/Dataset/Segmentation/BoniRob/raw_aug_rgb_img/",
                            
                            "pre_checkpoint": False,
                            
@@ -35,13 +35,13 @@ FLAGS = easydict.EasyDict({"img_size": 512,
 
                            "ignore_label": 0,
 
-                           "batch_size": 2,
+                           "batch_size": 4,
 
-                           "sample_images": "/yuhwan/yuhwan/checkpoint/Segmenation/related_UNET/BoniRob/sample_images",
+                           "sample_images": "/yuwhan/Edisk/yuwhan/Edisk/Segmentation/related_SegNet/BoniRob/sample_images",
 
-                           "save_checkpoint": "/yuhwan/yuhwan/checkpoint/Segmenation/related_UNET/BoniRob/checkpoint",
+                           "save_checkpoint": "/yuwhan/Edisk/yuwhan/Edisk/Segmentation/related_SegNet/BoniRob/checkpoint",
 
-                           "save_print": "/yuhwan/yuhwan/checkpoint/Segmenation/related_UNET/BoniRob/train_out.txt",
+                           "save_print": "/yuwhan/Edisk/yuwhan/Edisk/Segmentation/related_SegNet/BoniRob/train_out.txt",
 
                            "test_images": "D:/[1]DB/[5]4th_paper_DB/crop_weed/V2/test_images_CWFID",
 
@@ -67,7 +67,8 @@ def tr_func(image_list, label_list):
     img = tf.image.random_contrast(img, lower=0.5, upper=1.5)
     img = tf.clip_by_value(img, 0, 255)
     no_img = img
-    img = img[:, :, ::-1] - tf.constant([103.939, 116.779, 123.68]) # 평균값 보정
+    # img = img[:, :, ::-1] - tf.constant([103.939, 116.779, 123.68]) # 평균값 보정
+    img = tf.image.per_image_standardization(img)
 
     lab = tf.io.read_file(label_list)
     lab = tf.image.decode_png(lab, 1)
@@ -86,7 +87,8 @@ def test_func(image_list, label_list):
     img = tf.image.decode_jpeg(img, 3)
     img = tf.image.resize(img, [FLAGS.img_size, FLAGS.img_size])
     img = tf.clip_by_value(img, 0, 255)
-    img = img[:, :, ::-1] - tf.constant([103.939, 116.779, 123.68]) # 평균값 보정
+    # img = img[:, :, ::-1] - tf.constant([103.939, 116.779, 123.68]) # 평균값 보정
+    img = tf.image.per_image_standardization(img)
 
     lab = tf.io.read_file(label_list)
     lab = tf.image.decode_png(lab, 1)
@@ -102,7 +104,8 @@ def test_func2(image_list, label_list):
     img = tf.image.resize(img, [FLAGS.img_size, FLAGS.img_size])
     img = tf.clip_by_value(img, 0, 255)
     temp_img = img
-    img = img[:, :, ::-1] - tf.constant([103.939, 116.779, 123.68]) # 평균값 보정
+    # img = img[:, :, ::-1] - tf.constant([103.939, 116.779, 123.68]) # 평균값 보정
+    img = tf.image.per_image_standardization(img)
 
     lab = tf.io.read_file(label_list)
     lab = tf.image.decode_png(lab, 1)
